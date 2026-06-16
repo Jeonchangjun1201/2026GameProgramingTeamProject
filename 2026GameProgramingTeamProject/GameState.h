@@ -1,18 +1,42 @@
 #pragma once
 #include <vector>
-#include <string>
 #include "Enums.h"
+#include <Windows.h>
 
-constexpr float NORMAL_MIN_VALUE = 0.5f;
-constexpr float NORMAL_MAX_VALUE = 2;
-constexpr float NEWS_MIN_VALUE = 10;
-constexpr float NEWS_MAX_VALUE = 20;
+constexpr int EASY_MAP_HEIGHT = 9;
+constexpr int EASY_MAP_WIDTH = 9;
+constexpr int NORMAL_MAP_HEIGHT = 16;
+constexpr int NORMAL_MAP_WIDTH = 16;
+constexpr int HARD_MAP_HEIGHT = 16;
+constexpr int HARD_MAP_WIDTH = 30;
+constexpr int MAX_MAP_HEIGHT = 30;
+constexpr int MAX_MAP_WIDTH = 30;
+
+
+struct Mine
+{
+	COORD pos = { 0, 0 };
+	bool active = false;
+};
+
+struct Tile
+{
+	COORD pos = { 0, 0 };
+	short number = 0;
+	bool active = true;
+};
 
 struct GameState
 {
+public:
 	Scene prevScene = Scene::NONE;
 	Scene curScene = Scene::TITLE;
 	Menu curMenu = Menu::START;
-	Difficulty curDiff = Difficulty::EASY;
+	Difficulty curDiff = Difficulty::HARD;
 	bool isRunning = true;
+	Block map[MAX_MAP_HEIGHT][MAX_MAP_WIDTH] = {};
+	ULONGLONG curTime;
+	int mapH = 0;
+	int mapW = 0;
+	std::vector<Mine> vecMine;
 };
