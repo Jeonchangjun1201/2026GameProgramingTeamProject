@@ -87,7 +87,7 @@ void DrawTile(const GameState& state, int x, int y)
 	{
 	case Block::TILE:
 		SetColor(Color::GRAY);
-		cout << "#";
+		cout << "бс";
 		break;
 	case Block::EMPTY:
 		SetColor();
@@ -99,6 +99,25 @@ void DrawTile(const GameState& state, int x, int y)
 			cout << "б╪";
 		}
 		break;
+	}
+}
+
+void PlaceMine(GameState& state)
+{
+	switch (state.curDiff)
+	{
+	case Difficulty::EASY:
+	{
+		break;
+	}
+	case Difficulty::NORMAL:
+	{
+		break;
+	}
+	case Difficulty::HARD:
+	{
+		break;
+	}
 	}
 }
 

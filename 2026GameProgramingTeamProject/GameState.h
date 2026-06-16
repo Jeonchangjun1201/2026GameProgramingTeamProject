@@ -19,13 +19,6 @@ struct Mine
 	bool active = false;
 };
 
-struct Tile
-{
-	COORD pos = { 0, 0 };
-	short number = 0;
-	bool active = true;
-};
-
 struct GameState
 {
 public:

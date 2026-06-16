@@ -8,7 +8,7 @@ void InitGame(GameState& state)
 	srand((unsigned int)time(nullptr));
 	SetConsoleWindowSize(160, 45);
 	SetConsoleWindowStyle(true);
-	SetConsoleMouseInputDisabled();
+	//SetConsoleMouseInputDisabled();
 	state = GameState();
 }
 

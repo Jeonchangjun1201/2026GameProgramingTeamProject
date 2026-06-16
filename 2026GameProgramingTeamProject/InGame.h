@@ -9,6 +9,7 @@ void LoadMap(GameState& state);
 
 void DrawMap(const GameState& state);
 void DrawTile(const GameState& state, int x, int y);
+void PlaceMine(GameState& state);
 
 void InitInGame(GameState& state);
 void UpdateInGame(GameState& state);
