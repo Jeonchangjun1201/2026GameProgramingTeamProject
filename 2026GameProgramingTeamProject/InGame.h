@@ -12,7 +12,11 @@ void DrawTile(GameState& state, int x, int y);
 void DrawNumber(GameState& state, int x, int y);
 void PlaceMine(GameState& state);
 void RevealTile(GameState& state, int x, int y);
+void ActivatedMine(GameState& state);
+void UpdateCurrentFlags(GameState& state);
 bool IsInRange(GameState& state, int x, int y);
+bool IsAllTileClear(GameState& state);
+void DrawUI(GameState& state);
 
 void InitInGame(GameState& state);
 void UpdateInGame(GameState& state);

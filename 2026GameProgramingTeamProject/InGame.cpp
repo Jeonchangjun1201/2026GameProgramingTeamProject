@@ -67,7 +67,29 @@ void LoadMap(GameState& state)
 		state.maxMineCount = 99;
 		break;
 	}
+	case Difficulty::EXTREME:
+	{
+		std::ifstream mapFile("TextFiles\\ExtremeMap.txt");
+		if (!mapFile.is_open())
+			return;
+		state.mapW = EXTREME_MAP_WIDTH;
+		state.mapH = EXTREME_MAP_HEIGHT;
+		for (int y = 0; y < state.mapH; ++y)
+		{
+			string line;
+			mapFile >> line;
+			for (int x = 0; x < state.mapW; ++x)
+			{
+				int data = line[x] - '0';
+				state.map[y][x] = (Block)data;
+			}
+		}
+		state.maxMineCount = 199;
+		break;
 	}
+	}
+	state.maxFlagCount = state.maxMineCount;
+	SetConsoleWindowSize(state.mapW * 2, state.mapH + 10);
 	for (int y = 0; y < state.mapH; ++y)
 	{
 		for (int x = 0; x < state.mapW; ++x)
@@ -182,7 +204,7 @@ void PlaceMine(GameState& state)
 	int tileX = 0;
 	int tileY = 0;
 	POINT tilePos;
-	while (placedCnt <= state.maxMineCount)
+	while (placedCnt < state.maxMineCount)
 	{
 		tileX = rand() % state.mapW;
 		tileY = rand() % state.mapH;
@@ -197,25 +219,79 @@ void PlaceMine(GameState& state)
 
 void RevealTile(GameState& state, int x, int y)
 {
+	if (!IsInRange(state, x, y)) return;
 	if (state.map[y][x] == Block::FLAG) return;
 	state.map[y][x] = state.realMap[y][x];
 	if (state.realMap[y][x] == Block::MINE)
 	{
-		ShakeConsoleWindow(8, 500, 25);
-		for (int ry = 0; ry < state.mapH; ry++)
+		ActivatedMine(state);
+	}
+}
+
+void ActivatedMine(GameState& state)
+{
+	ShakeConsoleWindow(8, 500, 25);
+	if (state.isProtection)
+	{
+		state.isProtection = false;
+		return;
+	}
+	for (int ry = 0; ry < state.mapH; ry++)
+	{
+		for (int rx = 0; rx < state.mapW; rx++)
 		{
-			for (int rx = 0; rx < state.mapW; rx++)
-			{
-				if(state.realMap[ry][rx] == Block::MINE)
-					state.map[ry][rx] = state.realMap[ry][rx];
-			}
+			if (state.realMap[ry][rx] == Block::MINE)
+				state.map[ry][rx] = state.realMap[ry][rx];
 		}
 	}
+	GotoXY(0, 0);
+	DrawMap(state);
+	state.isFailed = true;
+	Sleep(2000);
+	state.curScene = Scene::GAMEOVER;
+}
+
+void UpdateCurrentFlags(GameState& state)
+{
+	int cnt = state.maxFlagCount;
+	for (int ry = 0; ry < state.mapH; ry++)
+	{
+		for (int rx = 0; rx < state.mapW; rx++)
+		{
+			if (state.map[ry][rx] == Block::FLAG)
+				cnt--;
+		}
+	}
+	state.canPlaceFlagCount = cnt;
 }
 
 bool IsInRange(GameState& state, int x, int y)
 {
 	return x >= 0 && x < state.mapW && y >= 0 && y < state.mapH ? true : false;
+}
+
+bool IsAllTileClear(GameState& state)
+{
+	int cnt = 0;
+	for (int ry = 0; ry < state.mapH; ry++)
+	{
+		for (int rx = 0; rx < state.mapW; rx++)
+		{
+			if ((state.map[ry][rx] == Block::TILE || state.map[ry][rx] == Block::FLAG) && state.realMap[ry][rx] != Block::MINE)
+				cnt++;
+		}
+	}
+	return cnt == 0 ? true : false;
+}
+
+void DrawUI(GameState& state)
+{
+	const int UI_X = 2;
+	const int UI_Y = state.mapH + 2;
+
+	GotoXY(UI_X, UI_Y);
+	int digits = std::to_string(state.maxFlagCount).length();
+	cout << "Flags Left: " << " " << std::setw(digits) << state.canPlaceFlagCount;
 }
 
 void InitInGame(GameState& state)
@@ -225,6 +301,7 @@ void InitInGame(GameState& state)
 
 void UpdateInGame(GameState& state)
 {
+	UpdateCurrentFlags(state);
 	UpdateInput();
 	if (GetKeyDown(VK_LBUTTON) && !state.isInit)
 	{
@@ -239,15 +316,27 @@ void UpdateInGame(GameState& state)
 	}
 	if (GetKeyDown(VK_RBUTTON) || GetKeyDown('F'))
 	{
+		if (state.canPlaceFlagCount == 0) return;
 		POINT temp = GetAndAdjustPosition();
+		if (!IsInRange(state, temp.x, temp.y)) return;
 		if (state.map[temp.y][temp.x] == Block::TILE)
 			state.map[temp.y][temp.x] = Block::FLAG;
 		else if (state.map[temp.y][temp.x] == Block::FLAG)
 			state.map[temp.y][temp.x] = Block::TILE;
+	}
+	if (GetKeyDown(VK_SPACE) && !state.isProtection)
+	{
+		state.isProtection = true;
+	}
+	if (IsAllTileClear(state))
+	{
+		Sleep(2000);
+		state.curScene = Scene::GAMEOVER;
 	}
 }
 
 void RenderInGame(GameState& state)
 {
 	DrawMap(state);
+	DrawUI(state);
 }

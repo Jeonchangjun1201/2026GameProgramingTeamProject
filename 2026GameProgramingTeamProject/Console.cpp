@@ -205,7 +205,7 @@ void SetCursorVisible(bool visible, DWORD size)
 {
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO curInfo;
-	curInfo.bVisible;
+	curInfo.bVisible = visible;
 	curInfo.dwSize = size;
 	SetConsoleCursorInfo(handle, &curInfo);
 }
