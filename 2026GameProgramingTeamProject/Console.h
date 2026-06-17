@@ -31,6 +31,7 @@ void SetConsoleFullScreen();
 void SetConsoleWindowStyle(bool showTitleBar);
 void ShakeConsoleWindow(int intensity, int duration, int interval);
 void SetConsoleMouseInputDisabled();
+POINT GetAndAdjustPosition();
 COORD GetConsoleResolution();
 
 // 커서 제어 함수

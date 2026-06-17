@@ -8,7 +8,7 @@ void InitGame(GameState& state)
 	srand((unsigned int)time(nullptr));
 	SetConsoleWindowSize(160, 45);
 	SetConsoleWindowStyle(true);
-	//SetConsoleMouseInputDisabled();
+	SetConsoleMouseInputDisabled();
 	state = GameState();
 }
 
@@ -37,7 +37,10 @@ void UpdateGame(GameState& state)
 void RenderGame(GameState& state)
 {
 	if (state.prevScene != state.curScene)
+	{
 		system("cls");
+		SetConsoleMouseInputDisabled();
+	}
 	GotoXY(0, 0);
 	switch (state.curScene)
 	{

@@ -176,6 +176,13 @@ void SetConsoleMouseInputDisabled()
 	SetConsoleMode(handle, mode);
 }
 
+POINT GetAndAdjustPosition()
+{
+	POINT temp = GetMouseCellPos();
+	temp.x /= 2;
+	return temp;
+}
+
 COORD GetConsoleResolution()
 {
 	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);

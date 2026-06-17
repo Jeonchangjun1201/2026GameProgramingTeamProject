@@ -7,9 +7,12 @@ void LoadMap(GameState& state);
 //bool TryDrawNumber(GameState& state, int x, int y);
 //bool TryDrawTile(GameState& state, int x, int y);
 
-void DrawMap(const GameState& state);
-void DrawTile(const GameState& state, int x, int y);
+void DrawMap(GameState& state);
+void DrawTile(GameState& state, int x, int y);
+void DrawNumber(GameState& state, int x, int y);
 void PlaceMine(GameState& state);
+void RevealTile(GameState& state, int x, int y);
+bool IsInRange(GameState& state, int x, int y);
 
 void InitInGame(GameState& state);
 void UpdateInGame(GameState& state);
