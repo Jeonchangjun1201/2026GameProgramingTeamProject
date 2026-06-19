@@ -89,7 +89,7 @@ void LoadMap(GameState& state)
 	}
 	}
 	state.maxFlagCount = state.maxMineCount;
-	SetConsoleWindowSize(state.mapW * 2, state.mapH + 10);
+	SetConsoleWindowSize(state.mapW * 2 + 20, state.mapH + 15);
 	for (int y = 0; y < state.mapH; ++y)
 	{
 		for (int x = 0; x < state.mapW; ++x)

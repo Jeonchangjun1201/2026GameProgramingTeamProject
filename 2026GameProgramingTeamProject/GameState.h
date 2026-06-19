@@ -29,11 +29,13 @@ public:
 	Scene prevScene = Scene::NONE;
 	Scene curScene = Scene::TITLE;
 	Menu curMenu = Menu::START;
-	Difficulty curDiff = Difficulty::EASY;
+	Difficulty curDiff = Difficulty::NORMAL;
 	bool isRunning = true;
 	bool isInit = false;
 	bool isFailed = false;
 	bool isProtection = false;
+	bool isBrush = false;
+	bool isMagnify = false;
 	POINT startPos = {};
 	Block map[MAX_MAP_HEIGHT][MAX_MAP_WIDTH] = {};
 	Block realMap[MAX_MAP_HEIGHT][MAX_MAP_WIDTH] = {};

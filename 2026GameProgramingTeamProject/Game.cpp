@@ -2,6 +2,9 @@
 #include "Console.h"
 #include "GameState.h"
 #include "InGame.h"
+#include "TitleScene.h"
+#include "SelectScene.h"
+#include "GameOverScene.h"
 
 void InitGame(GameState& state)
 {
@@ -20,9 +23,14 @@ void UpdateGame(GameState& state)
 	switch (state.curScene)
 	{
 	case Scene::TITLE:
-		state.curScene = Scene::INGAME;
+		if (sceneChanged)
+			InitTitle(state);
+		UpdateTitle(state);
 		break;
 	case Scene::SELECT:
+		if (sceneChanged)
+			InitSelect(state);
+		UpdateSelect(state);
 		break;
 	case Scene::INGAME:
 		if (sceneChanged)
@@ -30,6 +38,9 @@ void UpdateGame(GameState& state)
 		UpdateInGame(state);
 		break;
 	case Scene::GAMEOVER:
+		if (sceneChanged)
+			InitGameOver(state);
+		UpdateGameOver(state);
 		break;
 	}
 }
@@ -45,13 +56,16 @@ void RenderGame(GameState& state)
 	switch (state.curScene)
 	{
 	case Scene::TITLE:
+		RenderTitle(state);
 		break;
 	case Scene::SELECT:
+		RenderSelect(state);
 		break;
 	case Scene::INGAME:
 		RenderInGame(state);
 		break;
 	case Scene::GAMEOVER:
+		RenderGameOver(state);
 		break;
 	}
 }

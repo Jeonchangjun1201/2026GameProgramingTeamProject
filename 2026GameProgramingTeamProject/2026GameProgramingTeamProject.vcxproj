@@ -131,18 +131,24 @@
   <ItemGroup>
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameOverScene.cpp" />
     <ClCompile Include="InGame.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SelectScene.cpp" />
     <ClCompile Include="SoundManager.cpp" />
+    <ClCompile Include="TitleScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="InGame.h" />
+    <ClInclude Include="SelectScene.h" />
     <ClInclude Include="SoundManager.h" />
+    <ClInclude Include="TitleScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
