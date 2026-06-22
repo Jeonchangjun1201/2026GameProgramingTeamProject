@@ -7,9 +7,12 @@ int main()
 	GameState state;
 	InitGame(state);
 
-	while (true)
+	while (state.isRunning)
 	{
 		UpdateGame(state);
 		RenderGame(state);
+		FrameSync(60);
 	}
+
+	return 0;
 }
