@@ -6,7 +6,7 @@ void InitTitle(GameState& state)
 
 void UpdateTitle(GameState& state)
 {
-
+	MoveToSelectScene(state);
 }
 
 void RenderTitle(GameState& state)

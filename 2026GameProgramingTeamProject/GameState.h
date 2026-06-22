@@ -16,26 +16,20 @@ constexpr int MAX_MAP_WIDTH = 30;
 constexpr int DX[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 constexpr int DY[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 
-
-struct Mine
-{
-	POINT pos = { 0, 0 };
-	bool active = false;
-};
-
 struct GameState
 {
 public:
 	Scene prevScene = Scene::NONE;
 	Scene curScene = Scene::TITLE;
 	Menu curMenu = Menu::START;
-	Difficulty curDiff = Difficulty::NORMAL;
+	Difficulty curDiff = Difficulty::EASY;
 	bool isRunning = true;
 	bool isInit = false;
 	bool isFailed = false;
 	bool isProtection = false;
 	bool isBrush = false;
 	bool isMagnify = false;
+	bool mapLoaded = false;
 	POINT startPos = {};
 	Block map[MAX_MAP_HEIGHT][MAX_MAP_WIDTH] = {};
 	Block realMap[MAX_MAP_HEIGHT][MAX_MAP_WIDTH] = {};
@@ -45,5 +39,16 @@ public:
 	int canPlaceFlagCount = 0;
 	int mapH = 0;
 	int mapW = 0;
-	std::vector<Mine> vecMine;
+	POINT magItemPos = {};
+	POINT protecItemPos = {};
+	POINT brushItemPos = {};
+	bool hasProtection = false;
+	bool hasBrush = false;
+	bool hasMagnify = false;
+	bool protectionRevealed = false;
+	bool brushRevealed = false;
+	bool magnifyRevealed = false;
+	bool magnifyUsed = false;
+	POINT magnifyResult = {};
+	POINT magnifyRange = {};
 };

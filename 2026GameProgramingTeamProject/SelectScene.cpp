@@ -6,7 +6,7 @@ void InitSelect(GameState& state)
 
 void UpdateSelect(GameState& state)
 {
-
+	GameStart(state);
 }
 
 void RenderSelect(GameState& state)

@@ -97,10 +97,12 @@ void LoadMap(GameState& state)
 			state.realMap[y][x] = Block::EMPTY;
 		}
 	}
+	state.mapLoaded = true;
 }
 
 void DrawMap(GameState& state)
 {
+	GotoXY(0, 0);
 	for (int y = 0; y < state.mapH; ++y)
 	{
 		for (int x = 0; x < state.mapW; ++x)
@@ -138,18 +140,9 @@ void DrawTile(GameState& state, int x, int y)
 
 void DrawNumber(GameState& state, int x, int y)
 {
-	int cnt = 0;
+	int cnt = CheckMinesInRange(state, x, y);
 	int newX;
 	int newY;
-	for (int i = 0; i < 8; i++)
-	{
-		newX = x + DX[i];
-		newY = y + DY[i];
-
-		if (IsInRange(state, newX, newY) == false) continue;
-		if (state.realMap[newY][newX] == Block::MINE)
-			cnt++;
-	}
 	switch (cnt)
 	{
 	case 1:
@@ -203,7 +196,6 @@ void PlaceMine(GameState& state)
 	int placedCnt = 0;
 	int tileX = 0;
 	int tileY = 0;
-	POINT tilePos;
 	while (placedCnt < state.maxMineCount)
 	{
 		tileX = rand() % state.mapW;
@@ -217,6 +209,72 @@ void PlaceMine(GameState& state)
 	}
 }
 
+void PlaceItems(GameState& state)
+{
+	bool val = false;
+	int tileX = 0;
+	int tileY = 0;
+	int temp = 0;
+	int num = 0;
+	POINT tempPos = {};
+	// protection 아이템
+	for (int ry = 0; ry < state.mapH; ry++)
+	{
+		for (int rx = 0; rx < state.mapW; rx++)
+		{
+			if (state.realMap[ry][rx] == Block::MINE) continue;
+			temp = CheckMinesInRange(state, rx, ry);
+			if (temp > num)
+			{
+				tempPos = { rx, ry };
+				num = temp;
+			}
+		}
+	}
+	state.protecItemPos = tempPos;
+
+	// brush 아이템
+	temp = 0;
+	num = 0;
+	for (int ry = 0; ry < state.mapH; ry++)
+	{
+		for (int rx = 0; rx < state.mapW; rx++)
+		{
+			if (state.realMap[ry][rx] == Block::MINE) continue;
+			if ((rx == state.protecItemPos.x) && ry == (state.protecItemPos.y)) continue;
+			temp = CheckMinesInRange(state, rx, ry);
+			if (temp >= num)
+			{
+				tempPos = { rx, ry };
+				num = temp;
+			}
+		}
+	}
+
+	state.brushItemPos = tempPos;
+
+	// magnify 아이템
+	temp = 0;
+	num = 0;
+	for (int ry = 0; ry < state.mapH; ry++)
+	{
+		for (int rx = 0; rx < state.mapW; rx++)
+		{
+			if (state.realMap[ry][rx] == Block::MINE) continue;
+			if ((rx == state.protecItemPos.x) && ry == (state.protecItemPos.y)) continue;
+			if ((rx == state.brushItemPos.x) && ry == (state.brushItemPos.y)) continue;
+			temp = CheckMinesInRange(state, rx, ry);
+			if (temp > num)
+			{
+				tempPos = { rx, ry };
+				num = temp;
+			}
+		}
+	}
+
+	state.magItemPos = tempPos;
+}
+
 void RevealTile(GameState& state, int x, int y)
 {
 	if (!IsInRange(state, x, y)) return;
@@ -224,7 +282,13 @@ void RevealTile(GameState& state, int x, int y)
 	state.map[y][x] = state.realMap[y][x];
 	if (state.realMap[y][x] == Block::MINE)
 	{
-		ActivatedMine(state);
+		if (state.isBrush)
+		{
+			state.isBrush = false;
+			state.map[y][x] = Block::FLAG;
+		}
+		else
+			ActivatedMine(state);
 	}
 }
 
@@ -290,8 +354,91 @@ void DrawUI(GameState& state)
 	const int UI_Y = state.mapH + 2;
 
 	GotoXY(UI_X, UI_Y);
-	int digits = std::to_string(state.maxFlagCount).length();
-	cout << "Flags Left: " << " " << std::setw(digits) << state.canPlaceFlagCount;
+	cout << "Flags Left: " << state.canPlaceFlagCount << "     ";
+
+	GotoXY(UI_X, UI_Y + 1);
+	if (state.hasProtection)
+		cout << "[1] - 보호구(소유 중)               ";
+	else if (state.isProtection)
+		cout << "[1] - 보호구(사용 중)               ";
+	else
+		cout << "[1] - 보호구(보유하지 않음)               ";
+	GotoXY(UI_X, UI_Y + 2);
+	if (state.hasBrush)
+		cout << "[2] - 브러쉬(소유 중)               ";
+	else if (state.isBrush)
+		cout << "[2] - 브러쉬(사용 중)               ";
+	else
+		cout << "[2] - 브러쉬(보유하지 않음)               ";
+	GotoXY(UI_X, UI_Y + 3);
+	if (state.hasMagnify)
+		cout << "[3] - 돋보기(소유 중)               ";
+	else if (state.isMagnify)
+		cout << "[3] - 돋보기(사용 중)               ";
+	else
+		cout << "[3] - 돋보기(보유하지 않음)               ";
+
+	GotoXY(UI_X, UI_Y + 5);
+	if (state.magnifyUsed)
+	{
+		cout << "지뢰: 행(" << state.magnifyRange.y + 1 << ") - " << state.magnifyResult.x << "개, 열(" << state.magnifyRange.x + 1 << ") - " << state.magnifyResult.y << "개";
+	}
+}
+
+int CheckMinesInRange(GameState& state, int x, int y)
+{
+	int cnt = 0;
+	int newX;
+	int newY;
+	for (int i = 0; i < 8; i++)
+	{
+		newX = x + DX[i];
+		newY = y + DY[i];
+
+		if (IsInRange(state, newX, newY) == false) continue;
+		if (state.realMap[newY][newX] == Block::MINE)
+			cnt++;
+	}
+	return cnt;
+}
+
+void GrantItem(GameState& state)
+{
+	if (!state.protectionRevealed && state.map[state.protecItemPos.y][state.protecItemPos.x] == Block::EMPTY)
+	{
+		state.hasProtection = true;
+		state.protectionRevealed = true;
+	}
+	if (!state.brushRevealed && state.map[state.brushItemPos.y][state.brushItemPos.x] == Block::EMPTY)
+	{
+		state.hasBrush = true;
+		state.brushRevealed = true;
+	}
+	if (!state.magnifyRevealed && state.map[state.magItemPos.y][state.magItemPos.x] == Block::EMPTY)
+	{
+		state.hasMagnify = true;
+		state.magnifyRevealed = true;
+	}
+}
+
+void UseMagnify(GameState& state, int x, int y)
+{
+	int yCnt = 0;
+	int xCnt = 0;
+	for (int rx = 0; rx < state.mapW; rx++)
+	{
+		if (state.realMap[y][rx] == Block::MINE)
+			xCnt++;
+	}
+	for (int ry = 0; ry < state.mapH; ry++)
+	{
+		if (state.realMap[ry][x] == Block::MINE)
+			yCnt++;
+	}
+
+	state.magnifyResult = { xCnt, yCnt };
+	state.magnifyRange = { x, y };
+	state.magnifyUsed = true;
 }
 
 void InitInGame(GameState& state)
@@ -303,15 +450,23 @@ void UpdateInGame(GameState& state)
 {
 	UpdateCurrentFlags(state);
 	UpdateInput();
+	GrantItem(state);
 	if (GetKeyDown(VK_LBUTTON) && !state.isInit)
 	{
 		state.startPos = GetAndAdjustPosition();
 		PlaceMine(state);
+		PlaceItems(state);
 		state.isInit = true;
 	}
 	if (GetKeyDown(VK_LBUTTON))
 	{
 		POINT temp = GetAndAdjustPosition();
+		if (state.isMagnify)
+		{
+			state.isMagnify = false;
+			UseMagnify(state, temp.x, temp.y);
+			return;
+		}
 		RevealTile(state, temp.x, temp.y);
 	}
 	if (GetKeyDown(VK_RBUTTON) || GetKeyDown('F'))
@@ -324,9 +479,20 @@ void UpdateInGame(GameState& state)
 		else if (state.map[temp.y][temp.x] == Block::FLAG)
 			state.map[temp.y][temp.x] = Block::TILE;
 	}
-	if (GetKeyDown(VK_SPACE) && !state.isProtection)
+	if (GetKeyDown('1') && state.hasProtection)
 	{
 		state.isProtection = true;
+		state.hasProtection = false;
+	}
+	if (GetKeyDown('2') && state.hasBrush)
+	{
+		state.isBrush = true;
+		state.hasBrush = false;
+	}
+	if (GetKeyDown('3') && state.hasMagnify)
+	{
+		state.isMagnify = true;
+		state.hasMagnify = false;
 	}
 	if (IsAllTileClear(state))
 	{
@@ -337,6 +503,7 @@ void UpdateInGame(GameState& state)
 
 void RenderInGame(GameState& state)
 {
+	if (!state.mapLoaded) return;
 	DrawMap(state);
 	DrawUI(state);
 }
