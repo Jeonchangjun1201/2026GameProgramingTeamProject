@@ -22,7 +22,7 @@ public:
 	Scene prevScene = Scene::NONE;
 	Scene curScene = Scene::TITLE;
 	Menu curMenu = Menu::START;
-	Difficulty curDiff = Difficulty::EASY;
+	Difficulty curDiff = Difficulty::NORMAL;
 	bool isRunning = true;
 	bool isInit = false;
 	bool isFailed = false;
