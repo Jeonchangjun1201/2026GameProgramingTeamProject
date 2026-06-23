@@ -134,7 +134,7 @@ void SetConsoleWindowStyle(bool showTitleBar)
 {
 	HWND hWnd = GetConsoleWindow();
 	LONG style = GetWindowLong(hWnd, GWL_STYLE);
-	style & -WS_SIZEBOX & ~WS_MAXIMIZEBOX & ~WS_MINIMIZEBOX & ~WS_SYSMENU;
+	style &= ~WS_SIZEBOX & ~WS_MAXIMIZEBOX & ~WS_MINIMIZEBOX;
 	if (!showTitleBar)
 		style & -~WS_CAPTION;
 	SetWindowLong(hWnd, GWL_STYLE, style);         // 사이즈 ,   움직임X,        
