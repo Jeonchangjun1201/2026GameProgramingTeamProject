@@ -50,8 +50,13 @@ void RenderGameOver(GameState& state)
 	for (int i = 0; i < 2; ++i)
 	{
 		GotoXY(x - 2, y + i);
+		if (i == (int)state.curOverMenu)
+			SetColor(Color::LIGHT_GREEN);
+		else
+			SetColor();
 		cout << (i == (int)state.curOverMenu ? "> " : "  ") << label[i];
 	}
+	SetColor();
 	const wstring asciiOver[] =
 	{
 		L" _____ _____ _____ _____    _____ _____ _____ _____ ",
