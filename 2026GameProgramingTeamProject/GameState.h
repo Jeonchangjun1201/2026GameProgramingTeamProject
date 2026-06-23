@@ -23,6 +23,7 @@ public:
 	Scene prevScene = Scene::NONE;
 	Scene curScene = Scene::TITLE;
 	Menu curMenu = Menu::START;
+	GameOverMenu curOverMenu = GameOverMenu::RESTART;
 	Difficulty curDiff = Difficulty::NORMAL;
 	bool isRunning = true;
 	bool isInit = false;

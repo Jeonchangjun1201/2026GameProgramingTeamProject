@@ -455,7 +455,6 @@ void InitInGame(GameState& state)
 void UpdateInGame(GameState& state)
 {
 	UpdateCurrentFlags(state);
-	UpdateInput();
 	GrantItem(state);
 	if (GetKeyDown(VK_LBUTTON) && !state.isInit)
 	{

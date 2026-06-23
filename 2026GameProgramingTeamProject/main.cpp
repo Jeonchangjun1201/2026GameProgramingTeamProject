@@ -7,7 +7,7 @@ int main()
 	GameState state;
 	InitGame(state);
 
-	while (true)
+	while (state.isRunning)
 	{
 		ULONGLONG curTime = state.timeStopped ? state.lastTime : GetTickCount64();
 		state.lastTime = curTime;

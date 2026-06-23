@@ -5,6 +5,7 @@
 #include "TitleScene.h"
 #include "SelectScene.h"
 #include "GameOverScene.h"
+#include "InfoScene.h"
 #include "SoundManager.h"
 void InitGame(GameState& state)
 {
@@ -24,12 +25,18 @@ void UpdateGame(GameState& state)
 	bool sceneChanged = state.curScene != state.prevScene;
 	state.prevScene = state.curScene;
 
+	UpdateInput();
 	switch (state.curScene)
 	{
 	case Scene::TITLE:
 		if (sceneChanged)
 			InitTitle(state);
 		UpdateTitle(state);
+		break;
+	case Scene::INFO:
+		if (sceneChanged)
+			InitInfo(state);
+		UpdateInfo(state);
 		break;
 	case Scene::SELECT:
 		if (sceneChanged)
@@ -61,6 +68,9 @@ void RenderGame(GameState& state)
 	{
 	case Scene::TITLE:
 		RenderTitle(state);
+		break;
+	case Scene::INFO:
+		RenderInfo(state);
 		break;
 	case Scene::SELECT:
 		RenderSelect(state);

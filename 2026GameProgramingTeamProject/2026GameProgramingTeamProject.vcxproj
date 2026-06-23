@@ -132,6 +132,7 @@
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameOverScene.cpp" />
+    <ClCompile Include="InfoScene.cpp" />
     <ClCompile Include="InGame.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SelectScene.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameOverScene.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="InfoScene.h" />
     <ClInclude Include="InGame.h" />
     <ClInclude Include="SelectScene.h" />
     <ClInclude Include="SoundManager.h" />
