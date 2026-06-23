@@ -521,6 +521,15 @@ void InitInGame(GameState& state)
 	state.protectionNotifyEndTime = 0;
 	state.brushNotifyEndTime = 0;
 	state.magnifyNotifyEndTime = 0;
+	state.hasBrush = false;
+	state.hasMagnify = false;
+	state.hasProtection = false;
+	state.isBrush = false;
+	state.isMagnify = false;
+	state.isProtection = false;
+	state.magnifyUsed = false;
+	state.magnifyRange = {};
+	state.magnifyResult = {};
 	LoadMap(state);
 }
 
