@@ -4,6 +4,63 @@
 #include <algorithm>
 #include "SoundManager.h"
 
+namespace
+{
+	bool IsItemNotifyActive(ULONGLONG endTime)
+	{
+		return GetTickCount64() < endTime;
+	}
+
+	bool IsItemBlinkOn()
+	{
+		return (GetTickCount64() / ITEM_BLINK_INTERVAL_MS) % 2 == 0;
+	}
+
+	void StartItemNotify(ULONGLONG& notifyEndTime)
+	{
+		notifyEndTime = GetTickCount64() + ITEM_NOTIFY_DURATION_MS;
+	}
+
+	bool TryDrawItemSparkle(int x, int y, const POINT& itemPos, ULONGLONG notifyEndTime)
+	{
+		if (x != itemPos.x || y != itemPos.y)
+			return false;
+		if (!IsItemNotifyActive(notifyEndTime))
+			return false;
+
+		if (IsItemBlinkOn())
+		{
+			SetColor(Color::LIGHT_YELLOW);
+			cout << "★";
+		}
+		else
+		{
+			SetColor(Color::LIGHT_VIOLET);
+			cout << "◆";
+		}
+		SetColor();
+		return true;
+	}
+
+	void DrawItemLine(int uiX, int uiY, ULONGLONG notifyEndTime, bool hasItem, bool isUsing, const string& ownedText, const string& usingText, const string& emptyText)
+	{
+		GotoXY(uiX, uiY);
+		if (IsItemNotifyActive(notifyEndTime) && IsItemBlinkOn())
+			SetColor(Color::LIGHT_YELLOW);
+		else
+			SetColor();
+
+		if (hasItem)
+			cout << ownedText;
+		else if (isUsing)
+			cout << usingText;
+		else
+			cout << emptyText;
+
+		SetColor();
+	}
+}
+
 void LoadMap(GameState& state)
 {
 	switch (state.curDiff)
@@ -117,6 +174,13 @@ void DrawMap(GameState& state)
 
 void DrawTile(GameState& state, int x, int y)
 {
+	if (TryDrawItemSparkle(x, y, state.protecItemPos, state.protectionNotifyEndTime))
+		return;
+	if (TryDrawItemSparkle(x, y, state.brushItemPos, state.brushNotifyEndTime))
+		return;
+	if (TryDrawItemSparkle(x, y, state.magItemPos, state.magnifyNotifyEndTime))
+		return;
+
 	switch (state.map[y][x])
 	{
 	case Block::TILE:
@@ -362,27 +426,18 @@ void DrawUI(GameState& state)
 	GotoXY(UI_X, UI_Y);
 	cout << "Flags Left: " << state.canPlaceFlagCount << "     ";
 
-	GotoXY(UI_X, UI_Y + 1);
-	if (state.hasProtection)
-		cout << "[1] - 보호구(소유 중)               ";
-	else if (state.isProtection)
-		cout << "[1] - 보호구(사용 중)               ";
-	else
-		cout << "[1] - 보호구(보유하지 않음)               ";
-	GotoXY(UI_X, UI_Y + 2);
-	if (state.hasBrush)
-		cout << "[2] - 브러쉬(소유 중)               ";
-	else if (state.isBrush)
-		cout << "[2] - 브러쉬(사용 중)               ";
-	else
-		cout << "[2] - 브러쉬(보유하지 않음)               ";
-	GotoXY(UI_X, UI_Y + 3);
-	if (state.hasMagnify)
-		cout << "[3] - 돋보기(소유 중)               ";
-	else if (state.isMagnify)
-		cout << "[3] - 돋보기(사용 중)               ";
-	else
-		cout << "[3] - 돋보기(보유하지 않음)               ";
+	DrawItemLine(UI_X, UI_Y + 1, state.protectionNotifyEndTime, state.hasProtection, state.isProtection,
+		"[1] - 보호구(소유 중)               ",
+		"[1] - 보호구(사용 중)               ",
+		"[1] - 보호구(보유하지 않음)               ");
+	DrawItemLine(UI_X, UI_Y + 2, state.brushNotifyEndTime, state.hasBrush, state.isBrush,
+		"[2] - 브러쉬(소유 중)               ",
+		"[2] - 브러쉬(사용 중)               ",
+		"[2] - 브러쉬(보유하지 않음)               ");
+	DrawItemLine(UI_X, UI_Y + 3, state.magnifyNotifyEndTime, state.hasMagnify, state.isMagnify,
+		"[3] - 돋보기(소유 중)               ",
+		"[3] - 돋보기(사용 중)               ",
+		"[3] - 돋보기(보유하지 않음)               ");
 
 	GotoXY(UI_X, UI_Y + 5);
 	if (state.magnifyUsed)
@@ -414,16 +469,19 @@ void GrantItem(GameState& state)
 	{
 		state.hasProtection = true;
 		state.protectionRevealed = true;
+		StartItemNotify(state.protectionNotifyEndTime);
 	}
 	if (!state.brushRevealed && state.map[state.brushItemPos.y][state.brushItemPos.x] == Block::EMPTY)
 	{
 		state.hasBrush = true;
 		state.brushRevealed = true;
+		StartItemNotify(state.brushNotifyEndTime);
 	}
 	if (!state.magnifyRevealed && state.map[state.magItemPos.y][state.magItemPos.x] == Block::EMPTY)
 	{
 		state.hasMagnify = true;
 		state.magnifyRevealed = true;
+		StartItemNotify(state.magnifyNotifyEndTime);
 	}
 }
 
@@ -449,6 +507,9 @@ void UseMagnify(GameState& state, int x, int y)
 
 void InitInGame(GameState& state)
 {
+	state.protectionNotifyEndTime = 0;
+	state.brushNotifyEndTime = 0;
+	state.magnifyNotifyEndTime = 0;
 	LoadMap(state);
 }
 
