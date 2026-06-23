@@ -9,6 +9,8 @@ int main()
 
 	while (true)
 	{
+		ULONGLONG curTime = state.timeStopped ? state.lastTime : GetTickCount64();
+		state.lastTime = curTime;
 		UpdateGame(state);
 		RenderGame(state);
 	}

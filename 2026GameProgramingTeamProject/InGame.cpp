@@ -311,6 +311,7 @@ void ActivatedMine(GameState& state)
 	GotoXY(0, 0);
 	DrawMap(state);
 	state.isFailed = true;
+	state.timeStopped = true;
 	Sleep(2000);
 	state.curScene = Scene::GAMEOVER;
 }
@@ -352,6 +353,9 @@ void DrawUI(GameState& state)
 {
 	const int UI_X = 2;
 	const int UI_Y = state.mapH + 2;
+
+	GotoXY(UI_X, UI_Y - 1);
+	cout << "Time: " << state.totalTime;
 
 	GotoXY(UI_X, UI_Y);
 	cout << "Flags Left: " << state.canPlaceFlagCount << "     ";
@@ -457,6 +461,9 @@ void UpdateInGame(GameState& state)
 		PlaceMine(state);
 		PlaceItems(state);
 		state.isInit = true;
+		state.timeStopped = false;
+		state.lastTime = GetTickCount64();
+		state.nextCountTime = state.lastTime + TIMER_MS;
 	}
 	if (GetKeyDown(VK_LBUTTON))
 	{
@@ -496,8 +503,14 @@ void UpdateInGame(GameState& state)
 	}
 	if (IsAllTileClear(state))
 	{
-		Sleep(2000);
+		state.timeStopped = true;
+		Sleep(1000);
 		state.curScene = Scene::GAMEOVER;
+	}
+	if (state.lastTime >= state.nextCountTime && state.isInit)
+	{
+		state.nextCountTime = state.lastTime + TIMER_MS;
+		state.totalTime++;
 	}
 }
 
