@@ -530,6 +530,9 @@ void InitInGame(GameState& state)
 	state.magnifyUsed = false;
 	state.magnifyRange = {};
 	state.magnifyResult = {};
+	state.brushRevealed = false;
+	state.protectionRevealed = false;
+	state.magnifyRevealed = false;
 	LoadMap(state);
 }
 
@@ -563,11 +566,11 @@ void UpdateInGame(GameState& state)
 	}
 	if (GetKeyDown(VK_RBUTTON) || GetKeyDown('F'))
 	{
-		if (state.canPlaceFlagCount == 0) return;
 		POINT temp = GetAndAdjustPosition();
 		if (!IsInRange(state, temp.x, temp.y)) return;
 		if (state.map[temp.y][temp.x] == Block::TILE)
 		{
+			if (state.canPlaceFlagCount == 0) return;
 			state.map[temp.y][temp.x] = Block::FLAG;
 			SOUND->Play("flag");
 		}
