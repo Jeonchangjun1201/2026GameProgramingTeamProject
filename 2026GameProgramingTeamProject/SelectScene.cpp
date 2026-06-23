@@ -1,5 +1,41 @@
 #include "Console.h"
 #include "SelectScene.h"
+#include <algorithm>
+
+namespace
+{
+	int GetDisplayWidth(const string& text)
+	{
+		int width = 0;
+		for (size_t i = 0; i < text.size(); ++i)
+		{
+			unsigned char c = (unsigned char)text[i];
+			if (c >= 0x80)
+			{
+				width += 2;
+				++i;
+			}
+			else
+				width += 1;
+		}
+		return width;
+	}
+
+	int GetCenteredX(int screenWidth, const string& text)
+	{
+		return screenWidth / 2 - GetDisplayWidth(text) / 2;
+	}
+
+	string BuildMenuLine(const string& prefix, const string& label, const string& detail, int labelColWidth)
+	{
+		string line = prefix + label;
+		while (GetDisplayWidth(line) < labelColWidth)
+			line += " ";
+		line += "  ";
+		line += detail;
+		return line;
+	}
+}
 
 void InitSelect(GameState& state)
 {
@@ -31,7 +67,6 @@ void UpdateSelect(GameState& state)
 void RenderSelect(GameState& state)
 {
 	COORD res = GetConsoleResolution();
-	int centerX = res.X / 2;
 	int startY = res.Y / 3;
 	const string label[] = { "쉬움", "보통", "어려움", "극한" };
 	const string detail[] =
@@ -41,27 +76,41 @@ void RenderSelect(GameState& state)
 		"16 x 30 | 지뢰 99개",
 		"30 x 30 | 지뢰 199개"
 	};
+	const string title = "난이도 선택";
+	const string footer = "Enter : 게임 시작  |  ESC : 돌아가기";
+	const int labelColWidth = GetDisplayWidth(string("> ") + label[2]);
 
-	GotoXY(centerX - 8, startY - 2);
+	int menuMaxWidth = 0;
+	for (int i = 0; i < 4; ++i)
+	{
+		string line = BuildMenuLine("> ", label[i], detail[i], labelColWidth);
+		menuMaxWidth = std::max(menuMaxWidth, GetDisplayWidth(line));
+	}
+	int menuStartX = res.X / 2 - menuMaxWidth / 2;
+
+	GotoXY(GetCenteredX(res.X, title), startY - 2);
 	SetColor(Color::LIGHT_YELLOW);
-	cout << "난이도 선택";
+	cout << title;
 
 	for (int i = 0; i < 4; ++i)
 	{
-		GotoXY(centerX - 14, startY + i * 2);
+		string line = BuildMenuLine(
+			i == (int)state.curDiff ? "> " : "  ",
+			label[i],
+			detail[i],
+			labelColWidth);
+
+		GotoXY(menuStartX, startY + i * 2);
 		if (i == (int)state.curDiff)
 			SetColor(Color::LIGHT_GREEN);
 		else
 			SetColor();
-
-		cout << (i == (int)state.curDiff ? "> " : "  ") << label[i];
-		GotoXY(centerX + 2, startY + i * 2);
-		cout << detail[i];
+		cout << line;
 	}
 
-	GotoXY(centerX - 12, startY + 10);
+	GotoXY(GetCenteredX(res.X, footer), startY + 10);
 	SetColor(Color::LIGHT_GRAY);
-	cout << "Enter : 게임 시작  |  ESC : 돌아가기";
+	cout << footer;
 	SetColor();
 }
 

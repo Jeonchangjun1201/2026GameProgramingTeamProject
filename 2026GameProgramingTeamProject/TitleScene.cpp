@@ -1,5 +1,26 @@
 #include "Console.h"
 #include "TitleScene.h"
+#include <algorithm>
+
+namespace
+{
+	int GetDisplayWidth(const string& text)
+	{
+		int width = 0;
+		for (size_t i = 0; i < text.size(); ++i)
+		{
+			unsigned char c = (unsigned char)text[i];
+			if (c >= 0x80)
+			{
+				width += 2;
+				++i;
+			}
+			else
+				width += 1;
+		}
+		return width;
+	}
+}
 
 void InitTitle(GameState& state)
 {
@@ -38,14 +59,26 @@ void UpdateTitle(GameState& state)
 void RenderTitle(GameState& state)
 {
 	COORD res = GetConsoleResolution();
-	int x = res.X / 2 - 4;
 	int y = res.Y / 3 * 2;
 	const string label[] = { "게임 시작", "게임 정보", "게임 종료" };
+	int maxWidth = 0;
 	for (int i = 0; i < 3; ++i)
 	{
-		GotoXY(x - 2, y + i);
+		string line = string("> ") + label[i];
+		maxWidth = std::max(maxWidth, GetDisplayWidth(line));
+	}
+	int startX = res.X / 2 - maxWidth / 2;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		GotoXY(startX, y + i);
+		if (i == (int)state.curMenu)
+			SetColor(Color::LIGHT_GREEN);
+		else
+			SetColor();
 		cout << (i == (int)state.curMenu ? "> " : "  ") << label[i];
 	}
+	SetColor();
 }
 
 void MoveToSelectScene(GameState& state)
