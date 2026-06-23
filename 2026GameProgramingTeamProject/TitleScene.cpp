@@ -1,5 +1,6 @@
 ﻿#include "Console.h"
 #include "TitleScene.h"
+#include "SoundManager.h"
 
 void InitTitle(GameState& state)
 {
@@ -11,14 +12,17 @@ void UpdateTitle(GameState& state)
 {
 	if (GetKeyDown(VK_UP))
 	{
+		SOUND->Play("move");
 		state.curMenu = (Menu)std::max(0, (int)state.curMenu - 1);
 	}
 	if (GetKeyDown(VK_DOWN))
 	{
+		SOUND->Play("move");
 		state.curMenu = (Menu)std::min((int)Menu::QUIT, (int)state.curMenu + 1);
 	}
 	if (GetKeyDown(VK_SPACE) || GetKeyDown(VK_RETURN))
 	{
+		SOUND->Play("select");
 		switch (state.curMenu)
 		{
 		case Menu::START:
@@ -90,6 +94,7 @@ void FlashAnim(COORD res, int count, int delayMs)
 
 		SetColor();
 		system("cls");
+		SOUND->Play("transition");
 		Sleep(delayMs);
 	}
 }
@@ -109,6 +114,7 @@ void CrossAnim(COORD res, int delayMs)
 			GotoXY(res.X - 2 - x * 2, y);
 			cout << "  ";
 		}
+		SOUND->Play("transition");
 		Sleep(delayMs);
 	}
 	SetColor();

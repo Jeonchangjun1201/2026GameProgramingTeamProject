@@ -443,7 +443,15 @@ void DrawUI(GameState& state)
 	if (state.magnifyUsed)
 	{
 		cout << "지뢰: 행(" << state.magnifyRange.y + 1 << ") - " << state.magnifyResult.x << "개, 열(" << state.magnifyRange.x + 1 << ") - " << state.magnifyResult.y << "개";
+		GotoXY(UI_X, UI_Y + 6);
+		SetColor(Color::LIGHT_RED);
+		cout << "※행은 가로, 열은 세로줄※";
+		GotoXY(UI_X, UI_Y + 7);
+		cout << "※아래/오른쪽일 수록 숫자가 큼※";
+		GotoXY(UI_X, UI_Y + 8);
+		cout << "※인덱스 숫자 아님(1부터 시작)※";
 	}
+	SetColor();
 }
 
 int CheckMinesInRange(GameState& state, int x, int y)
@@ -470,18 +478,21 @@ void GrantItem(GameState& state)
 		state.hasProtection = true;
 		state.protectionRevealed = true;
 		StartItemNotify(state.protectionNotifyEndTime);
+		SOUND->Play("itemGet");
 	}
 	if (!state.brushRevealed && state.map[state.brushItemPos.y][state.brushItemPos.x] == Block::EMPTY)
 	{
 		state.hasBrush = true;
 		state.brushRevealed = true;
 		StartItemNotify(state.brushNotifyEndTime);
+		SOUND->Play("itemGet");
 	}
 	if (!state.magnifyRevealed && state.map[state.magItemPos.y][state.magItemPos.x] == Block::EMPTY)
 	{
 		state.hasMagnify = true;
 		state.magnifyRevealed = true;
 		StartItemNotify(state.magnifyNotifyEndTime);
+		SOUND->Play("itemGet");
 	}
 }
 

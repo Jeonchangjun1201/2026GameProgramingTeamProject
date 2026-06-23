@@ -1,5 +1,6 @@
 #include "InfoScene.h"
 #include "Console.h"
+#include "SoundManager.h"
 
 void InitInfo(GameState& state)
 {
@@ -10,7 +11,10 @@ void InitInfo(GameState& state)
 void UpdateInfo(GameState& state)
 {
 	if (GetKeyDown(VK_ESCAPE))
+	{
+		SOUND->Play("select");
 		state.curScene = Scene::TITLE;
+	}
 }
 
 void RenderInfo(GameState& state)

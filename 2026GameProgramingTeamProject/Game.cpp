@@ -11,7 +11,7 @@ void InitGame(GameState& state)
 {
 	srand((unsigned int)time(nullptr));
 	SetConsoleWindowSize(160, 45);
-	SetConsoleWindowStyle(true);
+	SetConsoleWindowStyle(false);
 	SetConsoleMouseInputDisabled();
 	SetCursorVisible(false);
 	state = GameState();
@@ -19,6 +19,12 @@ void InitGame(GameState& state)
 	SOUND->Load("mineExplosion", "mineExplosion.wav");
 	SOUND->Load("tile", "tile.wav");
 	SOUND->Load("flag", "flag.wav");
+	SOUND->Load("itemGet", "itemGet.wav");
+	SOUND->Load("select", "select.wav");
+	SOUND->Load("move", "move.wav");
+	SOUND->Load("transition", "transition.wav");
+	SOUND->Load("gameOver", "gameOver.wav");
+	SOUND->Load("gameClear", "gameClear.wav");
 }
 
 void UpdateGame(GameState& state)

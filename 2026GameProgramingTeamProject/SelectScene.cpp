@@ -1,5 +1,6 @@
 #include "Console.h"
 #include "SelectScene.h"
+#include "SoundManager.h"
 
 void InitSelect(GameState& state)
 {
@@ -11,18 +12,22 @@ void UpdateSelect(GameState& state)
 {
 	if (GetKeyDown(VK_UP))
 	{
+		SOUND->Play("move");
 		state.curDiff = (Difficulty)std::max(0, (int)state.curDiff - 1);
 	}
 	if (GetKeyDown(VK_DOWN))
 	{
+		SOUND->Play("move");
 		state.curDiff = (Difficulty)std::min((int)Difficulty::EXTREME, (int)state.curDiff + 1);
 	}
 	if (GetKeyDown(VK_SPACE) || GetKeyDown(VK_RETURN))
 	{
+		SOUND->Play("select");
 		GameStart(state);
 	}
 	if (GetKeyDown(VK_ESCAPE))
 	{
+		SOUND->Play("select");
 		state.curScene = Scene::TITLE;
 		state.curMenu = Menu::START;
 	}
