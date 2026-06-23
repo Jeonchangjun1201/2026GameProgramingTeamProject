@@ -2,6 +2,7 @@
 #include <fstream>
 #include "Console.h"
 #include <algorithm>
+#include "SoundManager.h"
 
 void LoadMap(GameState& state)
 {
@@ -295,6 +296,7 @@ void RevealTile(GameState& state, int x, int y)
 void ActivatedMine(GameState& state)
 {
 	ShakeConsoleWindow(8, 500, 25);
+	SOUND->Play("mineExplosion");
 	if (state.isProtection)
 	{
 		state.isProtection = false;
@@ -458,6 +460,7 @@ void UpdateInGame(GameState& state)
 	if (GetKeyDown(VK_LBUTTON) && !state.isInit)
 	{
 		state.startPos = GetAndAdjustPosition();
+		if (!IsInRange(state, state.startPos.x, state.startPos.y)) return;
 		PlaceMine(state);
 		PlaceItems(state);
 		state.isInit = true;
@@ -468,12 +471,14 @@ void UpdateInGame(GameState& state)
 	if (GetKeyDown(VK_LBUTTON))
 	{
 		POINT temp = GetAndAdjustPosition();
+		if (!IsInRange(state, temp.x, temp.y)) return;
 		if (state.isMagnify)
 		{
 			state.isMagnify = false;
 			UseMagnify(state, temp.x, temp.y);
 			return;
 		}
+		SOUND->Play("tile");
 		RevealTile(state, temp.x, temp.y);
 	}
 	if (GetKeyDown(VK_RBUTTON) || GetKeyDown('F'))
@@ -482,7 +487,10 @@ void UpdateInGame(GameState& state)
 		POINT temp = GetAndAdjustPosition();
 		if (!IsInRange(state, temp.x, temp.y)) return;
 		if (state.map[temp.y][temp.x] == Block::TILE)
+		{
 			state.map[temp.y][temp.x] = Block::FLAG;
+			SOUND->Play("flag");
+		}
 		else if (state.map[temp.y][temp.x] == Block::FLAG)
 			state.map[temp.y][temp.x] = Block::TILE;
 	}

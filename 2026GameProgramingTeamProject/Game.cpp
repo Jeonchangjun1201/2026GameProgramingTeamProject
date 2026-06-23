@@ -5,7 +5,7 @@
 #include "TitleScene.h"
 #include "SelectScene.h"
 #include "GameOverScene.h"
-
+#include "SoundManager.h"
 void InitGame(GameState& state)
 {
 	srand((unsigned int)time(nullptr));
@@ -13,6 +13,10 @@ void InitGame(GameState& state)
 	SetConsoleWindowStyle(true);
 	SetConsoleMouseInputDisabled();
 	state = GameState();
+	SOUND->Init();
+	SOUND->Load("mineExplosion", "mineExplosion.wav");
+	SOUND->Load("tile", "tile.wav");
+	SOUND->Load("flag", "flag.wav");
 }
 
 void UpdateGame(GameState& state)
