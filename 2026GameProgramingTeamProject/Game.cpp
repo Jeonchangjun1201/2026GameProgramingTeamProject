@@ -13,6 +13,7 @@ void InitGame(GameState& state)
 	SetConsoleWindowSize(160, 45);
 	SetConsoleWindowStyle(true);
 	SetConsoleMouseInputDisabled();
+	SetCursorVisible(false);
 	state = GameState();
 	SOUND->Init();
 	SOUND->Load("mineExplosion", "mineExplosion.wav");
