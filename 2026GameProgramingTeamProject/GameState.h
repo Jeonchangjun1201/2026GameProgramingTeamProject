@@ -16,6 +16,8 @@ constexpr int MAX_MAP_WIDTH = 30;
 constexpr int DX[8] = { -1, 0, 1, -1, 1, -1, 0, 1 };
 constexpr int DY[8] = { -1, -1, -1, 0, 0, 1, 1, 1 };
 constexpr int TIMER_MS = 1000;
+constexpr int ITEM_NOTIFY_DURATION_MS = 2000;
+constexpr int ITEM_BLINK_INTERVAL_MS = 150;
 
 struct GameState
 {
@@ -56,4 +58,7 @@ public:
 	bool magnifyUsed = false;
 	POINT magnifyResult = {};
 	POINT magnifyRange = {};
+	ULONGLONG protectionNotifyEndTime = 0;
+	ULONGLONG brushNotifyEndTime = 0;
+	ULONGLONG magnifyNotifyEndTime = 0;
 };
