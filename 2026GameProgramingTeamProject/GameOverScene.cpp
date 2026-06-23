@@ -51,6 +51,7 @@ void NewGame(GameState& state)
 	state.isInit = false;
 	state.isFailed = false;
 	state.mapLoaded = false;
+	state.totalTime = 0;
 	state.curScene = Scene::SELECT;
 }
 
@@ -59,5 +60,6 @@ void GoToTitle(GameState& state)
 	state.isInit = false;
 	state.isFailed = false;
 	state.mapLoaded = false;
+	state.totalTime = 0;
 	state.curScene = Scene::TITLE;
 }
