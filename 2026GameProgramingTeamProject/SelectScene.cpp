@@ -2,6 +2,7 @@
 
 void InitSelect(GameState& state)
 {
+
 }
 
 void UpdateSelect(GameState& state)

@@ -23,6 +23,7 @@ void RenderInfo(GameState& state)
 		"[ 조작 방법 ]",
 		"좌클릭 : 타일 제거",
 		"우클릭/F : 깃발 설치",
+		"스페이스/엔터 : 상호작용(선택)",
 		"1 : 보호구 아이템 사용(1회 무적)",
 		"2 : 브러쉬 아이템 사용(지뢰를 건들면 1회 깃발을 설치함)",
 		"3 : 돋보기 아이템 사용(클릭 시 해당 행과 열에 있는 지뢰 수 표시)",
@@ -31,14 +32,14 @@ void RenderInfo(GameState& state)
 		"아이템을 사용하면 소모되기 전 까지 계속 사용 중에 머물게 됩니다.",
 		"ESC를 눌러 돌아가기"
 	};
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 11; ++i)
 	{
 		GotoXY(x - 40, y + i);
 		if (i == 0)
 			SetColor(Color::LIGHT_YELLOW);
-		else if (i == 7 || i == 8)
+		else if (i == 8 || i == 9)
 			SetColor(Color::LIGHT_RED);
-		else if (i == 9)
+		else if (i == 10)
 			SetColor(Color::LIGHT_GRAY);
 		else
 			SetColor();
